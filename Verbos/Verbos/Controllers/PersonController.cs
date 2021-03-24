@@ -4,48 +4,69 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Verbos.Model;
+using Verbos.Service;
 
 namespace Calculadora.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CalculatorController : ControllerBase
+    public class PersonController : ControllerBase
     {
 
-        private readonly ILogger<CalculatorController> _logger;
+        private readonly ILogger<PersonController> _logger;
+        private readonly IPersonService _personService;
 
-        public CalculatorController(ILogger<CalculatorController> logger)
+        public PersonController(ILogger<PersonController> logger, IPersonService personService)
         {
             _logger = logger;
+            _personService = personService;
         }
 
-        [HttpGet("sum/{first}/{second}")]
-        public IActionResult Get(string first, string second)
+        [HttpGet()]
+        public IActionResult Get()
         {
-            if (IsNumeric(first) && IsNumeric(second))
-            {
-                var sum = ConvertToDceimal(first) + ConvertToDceimal(second);
-                return Ok(sum.ToString());
-            }
-
-            return BadRequest("Invalid input");
+            return Ok(_personService.FindAll());
         }
 
-        private decimal ConvertToDceimal(string strNumber)
+        [HttpGet("{id}")]
+        public IActionResult GetById(long id)
         {
-            decimal number;
-            if (decimal.TryParse(strNumber, out number))
-                return number;
+            var user = _personService.FindById(id);
+            if (user == null)
+                return NotFound();
 
-            return 0;
+            return Ok(user);
         }
 
-        private bool IsNumeric(string strNumber)
+        [HttpPost]
+        public IActionResult PostCreate([FromBody] Person person)
         {
-            double number;
+            if (person == null)
+                return BadRequest();
 
-            bool isNumber = double.TryParse(strNumber, System.Globalization.NumberStyles.Any, System.Globalization.NumberFormatInfo.InvariantInfo, out number);
-            return isNumber;
+            var user = _personService.Create(person);
+
+            return Ok(user);
+        }
+
+        [HttpPut]
+        public IActionResult PutUpdate([FromBody] Person person)
+        {
+            if (person == null)
+                return BadRequest();
+
+            var user = _personService.Update(person);
+
+            return Ok(user);
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(long id)
+        {
+            _personService.Delete(id);
+
+            return Ok();
         }
     }
 }
