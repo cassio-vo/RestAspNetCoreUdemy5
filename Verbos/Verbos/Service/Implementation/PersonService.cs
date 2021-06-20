@@ -3,11 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Verbos.Model;
+using Verbos.Model.Context;
 
 namespace Verbos.Service.Implementation
 {
     public class PersonService : IPersonService
     {
+        MySqlContext _context;
+
+        public PersonService(MySqlContext context)
+        {
+            _context = context;
+        }
+
         public Person Create(Person person)
         {
             return person;
@@ -20,7 +28,7 @@ namespace Verbos.Service.Implementation
 
         public List<Person> FindAll()
         {
-            throw new NotImplementedException();
+            return _context.Persons.ToList();
         }
 
         public Person FindById(long id)

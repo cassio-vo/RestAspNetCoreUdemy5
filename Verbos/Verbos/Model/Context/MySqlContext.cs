@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
+
 namespace Verbos.Model.Context
 {
     public class MySqlContext : DbContext
