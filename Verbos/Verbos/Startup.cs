@@ -6,11 +6,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Verbos.Model.Context;
 using Verbos.Service;
 using Verbos.Service.Implementation;
 
@@ -29,6 +31,10 @@ namespace Calculadora
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            var connection = Configuration["MySQLConnection.MySQLConnectionString"];
+            services.AddDbContext<MySqlContext>(options => options.UseMySql(connection,
+                new MySqlServerVersion(new Version(8, 0, 11))));
 
             services.AddScoped<IPersonService, PersonService>();
 
